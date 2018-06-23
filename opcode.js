@@ -102,4 +102,8 @@ const OpCode = {
   THROW: 240,
   THROWIFNOT: 241
 }
-export default OpCode
+
+if(typeof module !== 'undefined') {
+   module.exports = OpCode;
+}
+//export default OpCode

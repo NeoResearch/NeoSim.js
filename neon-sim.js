@@ -362,7 +362,8 @@ class NeonSimPrice
 
                    var x = EvaluationStack.Peek(1).GetBigInteger(); // BigInteger
 
-                   if (!CheckBigInteger(x << (int)ishift))
+                   //if (!CheckBigInteger(x << (int)ishift)) // TODO: fix this shift
+                   if (!CheckBigInteger(x << ishift))
                        return false;
 
                    break;
@@ -376,7 +377,8 @@ class NeonSimPrice
 
                    var x = EvaluationStack.Peek(1).GetBigInteger(); // BigInteger
 
-                   if (!CheckBigInteger(x >> (int)ishift))
+                   //if (!CheckBigInteger(x >> (int)ishift)) // TODO: fix shift
+                   if (!CheckBigInteger(x >> ishift))
                        return false;
 
                    break;
