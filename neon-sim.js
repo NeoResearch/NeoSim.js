@@ -3,8 +3,13 @@
 // NeoResearch team
 // Copyleft 2018 - MIT License
 
-import OpCode from './opcode'
-import StackItem from './stackitem'
+//import OpCode from './opcode'
+//import StackItem from './stackitem'
+
+const OpCode = require("./opcode");
+const StackItem = require("./stackitem");
+
+
 
 // calculate invocation price
 class NeonSimPrice
