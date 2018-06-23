@@ -262,7 +262,7 @@ class NeonSimPrice
                    break;
                case OpCode.UNPACK:
                    var item = EvaluationStack.Peek();
-                   if (item is Array array)
+                   if (item.constructor === Array)
                        size = array.Count;
                    else
                        return false;
@@ -294,9 +294,9 @@ class NeonSimPrice
           case OpCode.SETITEM:
               {
                   if (EvaluationStack.Count < 3) return false;
-                  if (!(EvaluationStack.Peek(2) is Map map)) return true;
+                  if (!(EvaluationStack.Peek(2).constructor === Map)) return true; // TODO: Deal with this Map type
                   var key = EvaluationStack.Peek(1); // StackItem
-                  if (key is ICollection) return false;
+                  //if (key is ICollection) return false; // TODO: cannot handle this ICollection
                   if (map.ContainsKey(key)) return true;
                   size = map.Count + 1;
               }
@@ -304,7 +304,7 @@ class NeonSimPrice
           case OpCode.APPEND:
               {
                   if (EvaluationStack.Count < 2) return false;
-                  if (!(EvaluationStack.Peek(1) is Array array)) return false;
+                  if (!(EvaluationStack.Peek(1).constructor === Array)) return false; // TODO: deal with this Array type, not BigInt
                   size = array.Count + 1;
               }
               break;
