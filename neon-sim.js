@@ -8,6 +8,7 @@
 
 const OpCode = require("./opcode");
 const StackItem = require("./stackitem");
+const Stack = require("./stack");
 
 
 
@@ -18,6 +19,7 @@ class NeonSimPrice
       return parseInt(""+script[2*instPointer] + script[2*instPointer+1], 16);
    }
 
+   // CurrentContext.OpReader.ReadByte()
    static GetInstruction(script, index) {
       return parseInt(""+script[2*index] + script[2*index+1], 16);
    }
@@ -141,7 +143,7 @@ class NeonSimPrice
    }
 
 
-   static GetPrice(nextInstruction)
+   static GetPrice(nextInstruction, script, EvaluationStack)
    {
       if (nextInstruction <= OpCode.PUSH16)
           return 0;
@@ -153,7 +155,7 @@ class NeonSimPrice
           case OpCode.TAILCALL:
               return 10;
           case OpCode.SYSCALL:
-              return GetPriceForSysCall();
+              return GetPriceForSysCall(nextInstruction, script, EvaluationStack);
           case OpCode.SHA1:
           case OpCode.SHA256:
               return 10;
@@ -184,32 +186,34 @@ class NeonSimPrice
        var gas_consumed = 0;
        // 0: OK    1: HALT    2: FAULT
        var state = 0; // OK
+       var testMode = false;
+       var gas_amount = gas_free + 0; //gas.GetData(); // TODO: receive extra gas count as parameter!
        var instPointer = 0; // instruction pointer
-       while (!(state == 1) && !(state == 2))
-       {
-           if (instPointer < script.length)
-           {
-               var nextOpcode = NextInstruction(script, instPointer);
+       var EvaluationStack = new Stack();
+       var AltStack = new Stack();
+       while (!(state == 1) && !(state == 2)) {
+           if (instPointer < script.length) {
+               var nextOpcode = NeonSimPrice.NextInstruction(script, instPointer);
 
-               var gas_consumed = gas_consumed + GetPrice(nextOpcode) * ratio;
+               var gas_consumed = gas_consumed + NeonSimPrice.GetPrice(nextOpcode, script, EvaluationStack) * ratio;
                if (!testMode && gas_consumed > gas_amount)
                {
                    state = 2; //State |= VMState.FAULT;
                    return false;
                }
 
-               if (!CheckItemSize(nextOpcode) ||
-                   !CheckStackSize(nextOpcode) ||
-                   !CheckArraySize(nextOpcode) ||
-                   !CheckInvocationStack(nextOpcode) ||
-                   !CheckBigIntegers(nextOpcode) ||
-                   !CheckDynamicInvoke(nextOpcode))
+               if (!NeonSimPrice.CheckItemSize(nextOpcode, EvaluationStack, AltStack) ||
+                   !NeonSimPrice.CheckStackSize(nextOpcode, EvaluationStack, AltStack) ||
+                   !NeonSimPrice.CheckArraySize(nextOpcode, EvaluationStack, AltStack) ||
+                   !NeonSimPrice.CheckInvocationStack(nextOpcode, EvaluationStack, AltStack) ||
+                   !NeonSimPrice.CheckBigIntegers(nextOpcode, EvaluationStack, AltStack) ||
+                   !NeonSimPrice.CheckDynamicInvoke(nextOpcode, EvaluationStack, AltStack))
                {
                    state = 2; //State |= VMState.FAULT;
                    return false;
                }
            }
-           StepInto();
+           NeonSimPrice.StepInto();
        }
 
        return !(state == 2);
@@ -245,7 +249,7 @@ class NeonSimPrice
    }
 
    // private bool CheckStackSize(OpCode nextInstruction)
-   static CheckStackSize(nextInstruction)
+   static CheckStackSize(nextInstruction, EvaluationStack, AltStack)
    {
        var size = 0;
        if (nextInstruction <= OpCode.PUSH16)
@@ -271,11 +275,36 @@ class NeonSimPrice
        if (size == 0)
            return true;
        size += EvaluationStack.Count + AltStack.Count;
-       if (size > MaxStackSize())
+       if (size > NeonSimPrice.MaxStackSize())
            return false;
        return true;
    }
 
+   //private const uint MaxStackSize = 2 * 1024;
+   static MaxStackSize() {
+      return 2 * 1024;
+   }
+
+   // https://github.com/neo-project/neo-vm/blob/e2f3b1aa42073ce27343c9a95bf076ce7d19d787/src/neo-vm/ExecutionEngine.cs#L972
+   //public void StepInto()
+   static StepInto(instPointer, script, InvocationStack) {
+           if (InvocationStack.Count == 0) State |= VMState.HALT;
+           if (State.HasFlag(VMState.HALT) || State.HasFlag(VMState.FAULT)) return;
+           // GetInstruction
+           pcode = instPointer >= script.length ? OpCode.RET : GetInstruction();
+
+           console.log("TODO: must add a try/catch here!");
+           //try
+           //{
+               ExecuteOp(opcode);
+           //}
+           //catch()
+           //{
+            //    State |= VMState.FAULT;
+           //}
+
+           return instPointer; // update instPointer!
+   }
 
    //private bool CheckArraySize(OpCode nextInstruction)
    static CheckArraySize(nextInstruction)
@@ -461,6 +490,11 @@ class NeonSimPrice
        }
 
        return true;
+   }
+
+   // random example
+   static example() {
+      return "00c56b51c57600026f69c46168124e656f2e52756e74696d652e4e6f74696679616c7566";
    }
 
 } // NeonSimPrice

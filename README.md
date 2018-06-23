@@ -11,3 +11,12 @@ Test with StackItem:
 `var x = new StackItem(400)`
 
 `x.ToByteArray()  // [ 1, 144 ]`
+
+
+Test with NeonSimPrice:
+
+`neonjs`
+
+`const NeonSimPrice = require('./neon-sim.js')`
+
+`NeonSimPrice.execute(NeonSimPrice.example())`
