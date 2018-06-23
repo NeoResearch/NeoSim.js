@@ -109,13 +109,16 @@ class NeonSimPrice
               var fee = 100;
 
               // TODO: implement similar contract_properties
-              ContractPropertyState contract_properties = (ContractPropertyState)(byte)EvaluationStack.Peek(3).GetBigInteger();
+              //ContractPropertyState contract_properties = (ContractPropertyState)(byte)EvaluationStack.Peek(3).GetBigInteger();
+              var contract_properties = EvaluationStack.Peek(3).GetBigInteger();
 
-              if (contract_properties.HasFlag(ContractPropertyState.HasStorage))
+              //if (contract_properties.HasFlag(ContractPropertyState.HasStorage))
+              if (contract_properties % 2 == 0)
               {
                   fee += 400;
               }
-              if (contract_properties.HasFlag(ContractPropertyState.HasDynamicInvoke))
+              //if (contract_properties.HasFlag(ContractPropertyState.HasDynamicInvoke))
+              if (contract_properties % 4 == 0)
               {
                   fee += 500;
               }
