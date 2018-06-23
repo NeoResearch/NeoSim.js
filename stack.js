@@ -31,3 +31,6 @@ Stack.prototype.Peek = function(n=0) {
 Stack.prototype.Size = function() {
     return this.Count;
 }
+
+if(typeof module !== 'undefined')
+   module.exports = Stack;

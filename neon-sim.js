@@ -4,6 +4,7 @@
 // Copyleft 2018 - MIT License
 
 import OpCode from './opcode'
+import StackItem from './stackitem'
 
 // calculate invocation price
 class NeonSimPrice
@@ -453,3 +454,6 @@ class NeonSimPrice
    }
 
 } // NeonSimPrice
+
+if(typeof module !== 'undefined')
+   module.exports = NeonSimPrice;
