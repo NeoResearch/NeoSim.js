@@ -1,6 +1,8 @@
 # neon-sim
 Neo AVM simulator
 
+Dependencies:
+`npm install big-integer`
 
 Test with StackItem:
 
