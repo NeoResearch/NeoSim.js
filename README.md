@@ -1,5 +1,6 @@
-# neon-sim
-Neo AVM simulator
+# NeoSim.js
+Neo AVM simulator on JavaScript.
+This project is intended to run together with NeoVM.js, and some external storage service, that will accomplish the part of the Application Engine information available at heavy RPC nodes. This is a safer alternative to testinvoke on RPC, and it will run on any browser.
 
 Dependencies:
 `npm install big-integer`
